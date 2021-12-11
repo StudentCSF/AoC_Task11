@@ -11,8 +11,6 @@ public class Main {
 
     static final int N = 10;
 
-    static int res = 0;
-
     static void task112() {
         int[][] m = parseInput();
         Queue<KeyValue<Integer, Integer>> q = new LinkedList<>();
@@ -26,9 +24,9 @@ public class Main {
     static void task11() {
         int[][] m = parseInput();
         Queue<KeyValue<Integer, Integer>> q = new LinkedList<>();
-        res = 0;
+        int res = 0;
         for (int t = 0; t < 100; t++) {
-            charging(m, q);
+            res += charging(m, q);
         }
         System.out.println(res);
     }
@@ -54,59 +52,62 @@ public class Main {
         return false;
     }
 
-    static void charging(int[][] m, Queue<KeyValue<Integer, Integer>> q) {
-        inc(m, q);
+    static int charging(int[][] m, Queue<KeyValue<Integer, Integer>> q) {
+        int sum = inc(m, q);
         while (!q.isEmpty()) {
             KeyValue<Integer, Integer> kv = q.poll();
             int r = kv.k;
             int c = kv.v;
             if (r - 1 >= 0) {
                 if (c - 1 >= 0) {
-                    chargeNeighbour(m, r - 1, c - 1, q);
+                    sum += chargeNeighbour(m, r - 1, c - 1, q);
                 }
-                chargeNeighbour(m, r - 1, c, q);
+                sum += chargeNeighbour(m, r - 1, c, q);
                 if (c + 1 < N) {
-                    chargeNeighbour(m, r - 1, c + 1, q);
+                    sum += chargeNeighbour(m, r - 1, c + 1, q);
                 }
             }
             if (c - 1 >= 0) {
-                chargeNeighbour(m, r, c - 1, q);
+                sum += chargeNeighbour(m, r, c - 1, q);
             }
             if (c + 1 < N) {
-                chargeNeighbour(m, r, c + 1, q);
+                sum += chargeNeighbour(m, r, c + 1, q);
             }
             if (r + 1 < N) {
                 if (c - 1 >= 0) {
-                    chargeNeighbour(m, r + 1, c - 1, q);
+                    sum += chargeNeighbour(m, r + 1, c - 1, q);
                 }
-                chargeNeighbour(m, r + 1, c, q);
+                sum += chargeNeighbour(m, r + 1, c, q);
                 if (c + 1 < N) {
-                    chargeNeighbour(m, r + 1, c + 1, q);
+                    sum += chargeNeighbour(m, r + 1, c + 1, q);
                 }
             }
         }
+        return sum;
     }
 
-    static void inc(int[][] m, Queue<KeyValue<Integer, Integer>> q) {
+    static int inc(int[][] m, Queue<KeyValue<Integer, Integer>> q) {
+        int sum = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                charge(m, i, j, q);
+                sum += charge(m, i, j, q);
             }
         }
+        return sum;
     }
 
-    static void chargeNeighbour(int[][] m, int i, int j, Queue<KeyValue<Integer, Integer>> q) {
-        if (m[i][j] > 0) {
-            charge(m, i, j, q);
-        }
+    static int chargeNeighbour(int[][] m, int i, int j, Queue<KeyValue<Integer, Integer>> q) {
+        return m[i][j] > 0 ? charge(m, i, j, q) : 0;
     }
 
-    static void charge(int[][] m, int i, int j, Queue<KeyValue<Integer, Integer>> q) {
+    static int charge(int[][] m, int i, int j, Queue<KeyValue<Integer, Integer>> q) {
         if (m[i][j] == 9) {
             m[i][j] = 0;
             q.offer(new KeyValue<>(i, j));
-            res++;
-        } else m[i][j]++;
+            return 1;
+        }
+        m[i][j]++;
+        return 0;
     }
 
     static class KeyValue<K, V> {
